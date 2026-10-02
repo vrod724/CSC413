@@ -18,7 +18,7 @@ public enum PieceType {
         return symbol;
     }
 
-    static PieceType fromSymbol(char letter){
+    public static PieceType fromSymbol(char letter){
         char uletter = Character.toUpperCase(letter);
         return switch( uletter ){
             case 'P' -> PieceType.PAWN;

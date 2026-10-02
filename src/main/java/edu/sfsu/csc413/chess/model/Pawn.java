@@ -23,16 +23,92 @@ public class Pawn extends Piece {
     /**
      * What a pawn may become on reaching the far rank.
      */
+
     private static final PieceType[] PROMOTION_CHOICES = { PieceType.QUEEN, PieceType.ROOK, PieceType.BISHOP, PieceType.KNIGHT };
 
     public Pawn(Color color) {
         super(color, PieceType.PAWN);
     }
 
+
+
     @Override
     public List<Move> pseudoLegalMoves(Board board, Position from) {
-        throw new UnsupportedOperationException("M2: implement Pawn.pseudoLegalMoves");
+        ArrayList<Move> moves = new ArrayList<Move>();
+        int numofmoves = 1;
+        boolean first = (from.rank() == 1 && this.color() == Color.WHITE ) || (from.rank() == 6 && this.color() == Color.BLACK );
+        if(first) {
+            numofmoves++;
+        }
+        // forward checks
+        int color = (this.color() == Color.WHITE) ? 1 : -1;
+
+
+        for( int rankdelta = 1; rankdelta < (numofmoves + 1 ); rankdelta++){
+            int second = 0;
+            if(rankdelta == 1){
+                second++;
+            }
+            Position check = from.offsetOrNull(0, rankdelta * color);
+            Piece frompiece = board.pieceAt(from);
+
+            if(check == null){
+                break;
+            }
+            Piece checkpiece = board.pieceAt(check);
+            if(checkpiece == null){
+                boolean promoted = (frompiece.type() == PieceType.PAWN ) && ( (check.rank() == 7 && frompiece.color() == Color.WHITE) || (check.rank() == 0 && frompiece.color() == Color.BLACK) );
+                if(promoted){
+                    addAllPromotionalChecks(moves,from, check,frompiece, null, PROMOTION_CHOICES);
+                } else moves.add(new Move(from, check, frompiece, null, null));
+            } else break;
+        }
+
+       // diagonal checks
+        int[][] deltas = new int[2][2];
+        if(this.color() == Color.WHITE){
+            deltas[0][0] = -1; deltas[0][1] = 1;
+            deltas[1][0] = 1; deltas[1][1] = 1;
+        } else{
+            deltas[0][0] = -1; deltas[0][1] = -1;
+            deltas[1][0] = 1; deltas[1][1] = -1;
+        }
+
+        for(int i = 0; i < 2; i++){
+            Position check = from.offsetOrNull(deltas[i][0], deltas[i][1]);
+            Piece frompiece = board.pieceAt(from);
+
+            if(check == null){
+                continue;
+            }
+
+            Piece checkpiece = board.pieceAt(check);
+
+            if(checkpiece != null && checkpiece.color() != this.color()){
+                boolean promoted = (frompiece.type() == PieceType.PAWN ) && ( (check.rank() == 7 && frompiece.color() == Color.WHITE) || (check.rank() == 0 && frompiece.color() == Color.BLACK) );
+                if(promoted){
+                    addAllPromotionalChecks(moves,from, check,frompiece, checkpiece, PROMOTION_CHOICES);
+                } else moves.add(new Move(from, check, frompiece, checkpiece, null));
+            }
+
+
+
+        }
+
+
+
+
+       return moves;
     }
+
+    // promotional check
+    private void addAllPromotionalChecks (List<Move> moves, Position from, Position to, Piece moved, Piece captured, PieceType[] choices){
+        moves.add(new Move(from, to, moved, captured, choices[0]));
+        moves.add(new Move(from, to, moved, captured, choices[1]));
+        moves.add(new Move(from, to, moved, captured, choices[2]));
+        moves.add(new Move(from, to, moved, captured, choices[3]));
+    }
+
 
     /**
      * A pawn attacks the two squares diagonally ahead of it, whether or not
@@ -47,6 +123,13 @@ public class Pawn extends Piece {
      */
     @Override
     public boolean attacks(Board board, Position from, Position target) {
-        throw new UnsupportedOperationException("M2: implement Pawn.attacks");
+        int color = (this.color() == Color.WHITE) ? 1 : -1;
+        for (int side : new int[] { -1, 1 }) {
+            Position attack = from.offsetOrNull(side, color);
+            if (attack != null && attack.equals(target)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
