@@ -43,6 +43,38 @@ public class Board {
         return positions;
     }// every square holding that color
 
+    public void apply(Move move){
+        place(move.from(), null);                       // lift
+
+        if(!move.isPromotion()){
+            place(move.to(), move.moved());
+        } else {
+            char symbol = move.promotesTo().symbol();
+            Piece promoted = new Queen(move.moved().color());
+            // using switch to check which piece to promote to
+            switch (symbol){
+                case 'N':
+                    promoted = new Knight(move.moved().color());
+                    break;
+                case 'B':
+                    promoted = new Bishop(move.moved().color());
+                    break;
+                case 'R':
+                    promoted = new Rook(move.moved().color());
+                    break;
+                default:
+                    promoted = new Queen(move.moved().color());
+                    break;
+            }
+            place(move.to(), promoted );
+        }
+    }    // lift from `from`, set down on `to`; promotion swaps the piece
+
+    public void undo(Move move){
+        place(move.from(), move.moved());
+        place(move.to(), move.captured());
+    }     // put `moved` back on `from`; put `captured` (or null) back on `to`
+
     @Override public String toString(){
         StringBuilder text = new StringBuilder();
         int space = 0;
@@ -76,5 +108,14 @@ public class Board {
             }
         }
         return text.toString();
+    }
+
+    private Piece promote(PieceType type, Color color) {
+        switch (type.symbol()) {
+            case 'N': return new Knight(color);
+            case 'B': return new Bishop(color);
+            case 'R': return new Rook(color);
+            default:  return new Queen(color);
+        }
     }
 }
