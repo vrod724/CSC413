@@ -118,4 +118,21 @@ public class Board {
             default:  return new Queen(color);
         }
     }
+
+    /*
+    returns the position of the current player's king.
+    the square holding that colour's king, or null if it has none.
+    A real game always has both kings; the tests build partial positions without them all the time,
+    so null is a normal answer, not an error.
+    The board already knows how to list every square a colour occupies, and every piece knows its type.
+     */
+    public Position kingPosition(Color color){
+        Position kingposition = null;
+        for( Position positions : this.positionsOf(color)){
+            if(this.pieceAt(positions).type() == PieceType.KING){
+                kingposition = positions;
+            }
+        }
+        return kingposition;
+    }
 }

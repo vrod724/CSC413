@@ -42,7 +42,19 @@ public final class MoveGenerator {
      * when it tightens.
      */
     public static List<Move> legalMoves(Board board, Color color) {
-        return pseudoLegalMoves(board, color);
+        List<Move> legalmoves = new ArrayList<>();
+        boolean check;
+
+        for(Move moves : pseudoLegalMoves(board,color)){
+            board.apply(moves);
+            check = isInCheck(board,color);
+            board.undo(moves);
+            if(!check) {
+                legalmoves.add(moves);
+            }
+        }
+
+        return legalmoves;
     }
 
     /**
@@ -62,5 +74,33 @@ public final class MoveGenerator {
             moves.addAll(board.pieceAt(from).pseudoLegalMoves(board, from));
         }
         return moves;
+    }
+
+    /*
+    true if color's king is attacked by the other colour.
+    Two calls you just wrote, and a decision about the side with no king: it is not in check.
+     */
+    public static boolean isInCheck(Board board, Color color){
+        //boolean isincheck = false;
+        return isAttacked(board, board.kingPosition(color),color.opposite());
+        //return isincheck;
+    }
+
+    /*
+    true if any piece of colour attacker attacks target.
+    Not "could move there": attacks.
+    The difference is the pawn, which moves straight ahead and captures diagonally.
+    M2 gave every piece attacks(board, from, target) for exactly this, and Pawn overrides it.
+    Ask each piece; do not ask what kind of piece it is.
+     */
+    public static boolean isAttacked(Board board, Position target, Color attacker){
+        boolean isattacked = false;
+        for(Position position : board.positionsOf(attacker)){
+            if(board.pieceAt(position).attacks(board, position, target) ){
+                isattacked = true;
+                break;
+            }
+        }
+        return isattacked;
     }
 }
