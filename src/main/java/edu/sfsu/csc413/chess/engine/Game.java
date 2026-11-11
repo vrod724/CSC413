@@ -85,16 +85,29 @@ public class Game {
      * with that case.
      */
     public Optional<Move> findLegalMove(String notation) {
-        if(notation.length() != 4){
+        boolean promoted = false;
+        char symbol = 'x';
+        if(notation.length() > 5 || notation.length() < 4){
             return Optional.empty();
+        }
+        if(notation.length() == 5){
+            promoted = true;
+            symbol = notation.charAt(4);
         }
 
         Position from = Position.parse(notation.substring(0,2));
         Position to = Position.parse(notation.substring(2,4));
-
-        for(Move moves: legalMoves()){
-            if(moves.from().equals(from) && moves.to().equals(to)){
-                return Optional.of(moves);
+        if(promoted){
+            for (Move moves : legalMoves()) {
+                if (moves.from().equals(from) && moves.to().equals(to) && Character.toLowerCase(moves.promotesTo().symbol()) == symbol) {
+                    return Optional.of(moves);
+                }
+            }
+        } else {
+            for (Move moves : legalMoves()) {
+                if (moves.from().equals(from) && moves.to().equals(to) && !moves.isPromotion()) {
+                    return Optional.of(moves);
+                }
             }
         }
 
@@ -131,5 +144,18 @@ public class Game {
         board.undo(last);
         sideToMove = (sideToMove == Color.WHITE) ? Color.BLACK : Color.WHITE;
         return Optional.of(last);
+    }
+
+    /*checks the status of the current game by asking the status() method in MoveGenerator
+    much like how legalmoves in Game also asks legalmoves in MoveGenerator.
+    */
+    public GameStatus status(){
+        return MoveGenerator.status(this.board, this.sideToMove);
+    }
+    /* checks whether the status of the current game is a checkmate or a stalemate;
+    if it's either than it is a game over.
+    */
+    public boolean isGameOver(){
+        return this.status() == GameStatus.CHECKMATE || this.status() == GameStatus.STALEMATE;
     }
 }

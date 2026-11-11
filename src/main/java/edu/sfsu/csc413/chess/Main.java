@@ -5,6 +5,9 @@ import edu.sfsu.csc413.chess.engine.Game;
 import edu.sfsu.csc413.chess.factory.BoardFactory;
 import edu.sfsu.csc413.chess.model.Board;
 import edu.sfsu.csc413.chess.model.Move;
+import edu.sfsu.csc413.chess.view.BoardView;
+import edu.sfsu.csc413.chess.view.ConsoleView;
+import edu.sfsu.csc413.chess.view.GameController;
 
 import java.util.Optional;
 
@@ -20,9 +23,12 @@ public final class Main {
         System.out.println("CSC 413 Chess — environment OK.");
         //BoardFactory.standard();
         Game game = new Game();
+        BoardView view = new ConsoleView();
+        GameController controller = new GameController(game, view);
+        controller.start();
 
 
-        Move move1 = game.findLegalMove("f2f3").orElseThrow(() -> new IllegalStateException("blank"));
+        /*Move move1 = game.findLegalMove("f2f3").orElseThrow(() -> new IllegalStateException("blank"));
         game.play(move1);
         Move move2 = game.findLegalMove("e7e5").orElseThrow(() -> new IllegalStateException("blank"));
         game.play(move2);
@@ -30,7 +36,7 @@ public final class Main {
         game.play(move3);
         Move move4 = game.findLegalMove("d8h4").orElseThrow(() -> new IllegalStateException("blank"));
         game.play(move4);
-
+        */
 
 
         System.out.println(game.legalMoves());

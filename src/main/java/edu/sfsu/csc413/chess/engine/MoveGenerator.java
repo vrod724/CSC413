@@ -103,4 +103,30 @@ public final class MoveGenerator {
         }
         return isattacked;
     }
+
+    /* Returns an enum (GameStatus) that represents the status of the current game:
+    it is how the game stands for the side to move.
+    */
+    public static GameStatus status(Board board, Color sideToMove){
+        boolean hasalegalmove = !legalMoves(board, sideToMove).isEmpty();
+        boolean incheck = isInCheck(board,sideToMove);
+        GameStatus status = null;
+
+        switch(incheck + "&" + hasalegalmove){
+            case "false&true":
+                status = GameStatus.IN_PROGRESS;
+                break;
+            case "true&true":
+                status = GameStatus.CHECK;
+                break;
+            case "true&false":
+                status = GameStatus.CHECKMATE;
+                break;
+            case "false&false":
+                status = GameStatus.STALEMATE;
+                break;
+        }
+
+        return status;
+    }
 }

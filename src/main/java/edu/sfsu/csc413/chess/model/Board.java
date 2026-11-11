@@ -52,17 +52,17 @@ public class Board {
             char symbol = move.promotesTo().symbol();
             Piece promoted = new Queen(move.moved().color());
             // using switch to check which piece to promote to
-            switch (symbol){
-                case 'N':
+            switch (move.promotesTo()){
+                case PieceType.KNIGHT:
                     promoted = new Knight(move.moved().color());
                     break;
-                case 'B':
+                case PieceType.BISHOP:
                     promoted = new Bishop(move.moved().color());
                     break;
-                case 'R':
+                case PieceType.ROOK:
                     promoted = new Rook(move.moved().color());
                     break;
-                default:
+                case PieceType.QUEEN:
                     promoted = new Queen(move.moved().color());
                     break;
             }

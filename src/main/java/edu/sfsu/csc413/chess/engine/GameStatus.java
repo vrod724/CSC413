@@ -8,7 +8,7 @@ package edu.sfsu.csc413.chess.engine;
  * only difference between those two is whether the side to move is in check:
  * both mean "no legal moves", but one is a loss and the other a draw.
  */
-public enum GameStatus {
+public enum     GameStatus {
     /** Play continues normally. */
     IN_PROGRESS,
     /** The side to move is in check but has at least one legal reply. */
