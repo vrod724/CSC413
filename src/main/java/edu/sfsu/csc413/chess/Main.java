@@ -5,9 +5,11 @@ import edu.sfsu.csc413.chess.engine.Game;
 import edu.sfsu.csc413.chess.factory.BoardFactory;
 import edu.sfsu.csc413.chess.model.Board;
 import edu.sfsu.csc413.chess.model.Move;
+import edu.sfsu.csc413.chess.view.AnsiView;
 import edu.sfsu.csc413.chess.view.BoardView;
 import edu.sfsu.csc413.chess.view.ConsoleView;
 import edu.sfsu.csc413.chess.view.GameController;
+import edu.sfsu.csc413.chess.view.SwingView;
 
 import java.util.Optional;
 
@@ -21,25 +23,21 @@ public final class Main {
 
     public static void main(String[] args) {
         System.out.println("CSC 413 Chess — environment OK.");
-        //BoardFactory.standard();
         Game game = new Game();
-        BoardView view = new ConsoleView();
+        BoardView view = chooseView(args);
         GameController controller = new GameController(game, view);
         controller.start();
 
-
-        /*Move move1 = game.findLegalMove("f2f3").orElseThrow(() -> new IllegalStateException("blank"));
-        game.play(move1);
-        Move move2 = game.findLegalMove("e7e5").orElseThrow(() -> new IllegalStateException("blank"));
-        game.play(move2);
-        Move move3 = game.findLegalMove("g2g4").orElseThrow(() -> new IllegalStateException("blank"));
-        game.play(move3);
-        Move move4 = game.findLegalMove("d8h4").orElseThrow(() -> new IllegalStateException("blank"));
-        game.play(move4);
-        */
-
-
         System.out.println(game.legalMoves());
+    }
+
+    private static BoardView chooseView(String[] args) {
+        String name = args.length > 0 ? args[0].toLowerCase() : "console";
+        return switch (name) {
+            case "swing" -> new SwingView();
+            case "ansi" -> new AnsiView();
+            default -> new ConsoleView();
+        };
     }
 
     private Main() {
