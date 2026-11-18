@@ -33,7 +33,6 @@ written by hand and are finished. Your job is views only.
 - `./mvnw test` passes, with no test changed or deleted.
 - `git diff --stat` lists only new files under `view/` and `Main.java`.
 
-
 ## Stop and ask
 
 If you think a file under "Don't" has to change, stop and explain why
