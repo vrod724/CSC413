@@ -2,6 +2,7 @@ package edu.sfsu.csc413.chess.view;
 
 import edu.sfsu.csc413.chess.engine.Game;
 import edu.sfsu.csc413.chess.model.Color;
+import edu.sfsu.csc413.chess.model.Position;
 
 import java.io.PrintStream;
 import java.util.Scanner;
@@ -60,13 +61,44 @@ public class AnsiView implements BoardView {
 
     @Override
     public PlayerAction nextAction(Game game) {
-        while(true) {
+        boolean retry = false;
+        Scanner input = new Scanner(System.in);
+        String notation = "";
+       while(true){
+           if(!retry){
+               out.print("Your move (e.g. e2e4, 'undo', 'moves', 'quit'): ");
+           }
+           if(retry){
+               out.print("\nNot a legal move: '" + notation + "'. Please try again: ");
+           }
+           out.flush();
+           notation = input.nextLine();
+           if(!(notation.equals("undo") || notation.equals("moves") || notation.equals("quit") || notation.equals("exit"))) {
+               if (notation.length() < 4 || notation.length() > 5) {
+                   retry = true;
+                   continue;
+               } else {
+                   var move = game.findLegalMove(notation);
+                   if (move.isPresent()) {
+                        return PlayerAction.parse(notation);
+                   }
+                   else {
+                       retry = true;
+                       continue;
+                   }
+               }
+           }
+           return PlayerAction.parse(notation);
+
+       }
+
+        /*while(true) {
             out.print("Your move (e.g. e2e4, 'undo', 'moves', 'quit'): ");
             out.flush();
             if(in.hasNextLine()){
                 return PlayerAction.parse(in.hasNextLine() ? in.nextLine() : "quit");
             }
-
         }
+         */
     }
 }

@@ -117,7 +117,7 @@ In run 3, SwingView, on a promotion, within squareClicked (line 134) it construc
 
 Across all the versions of AnsiView throughout the different runs, all of them were similar to difficulty to change. However, if I were to pick one that would be the easiest to change it would be Run 3's because it was the closest to the intended effect I wanted to achieve.
 
-I decided to not to keep the SwingView from Run 2, but I did decide to keep the AnsiView from Run 3.
+I decided not to keep the SwingView from Run 2, but I did decide to keep the AnsiView from Run 3.
 
 12. Applied:
     I took all of the generated code for SwingView from Run 1 as well as all of the generated code for AnsiView from Run 3 and inserted them into the view of the chess engine (2 new java classes)
@@ -138,14 +138,35 @@ I decided to not to keep the SwingView from Run 2, but I did decide to keep the 
     I changed nextAction in AnsiView; I expanded the structure of it and added a while loop so I can make checks on the length or content of the parsed text the user enters to catch those instances and ask the user to retry instead of the program simply throwing an exception.
 
 "public PlayerAction nextAction(Game game) {
-while(true) {
+boolean retry = false;
+Scanner input = new Scanner(System.in);
+String notation = "";
+while(true){
+if(!retry){
 out.print("Your move (e.g. e2e4, 'undo', 'moves', 'quit'): ");
-out.flush();
-if(in.hasNextLine()){
-return PlayerAction.parse(in.hasNextLine() ? in.nextLine() : "quit");
 }
+if(retry){
+out.print("\nNot a legal move: '" + notation + "'. Please try again: ");
+}
+out.flush();
+notation = input.nextLine();
+if(!(notation.equals("undo") || notation.equals("moves") || notation.equals("quit") || notation.equals("exit"))) {
+if (notation.length() < 4 || notation.length() > 5) {
+retry = true;
+continue;
+} else {
+var move = game.findLegalMove(notation);
+if (move.isPresent()) {
+return PlayerAction.parse(notation);
+}
+else {
+retry = true;
+continue;
+}
+}
+}
+return PlayerAction.parse(notation);
 
-        }
-    }"
+       }"
 
 
